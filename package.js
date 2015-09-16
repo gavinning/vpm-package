@@ -38,8 +38,9 @@ function zip(source, target, filter, fn) {
  * @param    {String}   target  解压缩目的地
  * @example  zip('./folder.zip', './test/folder');
  */
-function unzip(src, target) {
-    fs.createReadStream(src).pipe(Unzip.Extract({path: target}))
+function unzip(src, target, fn) {
+    fs.createReadStream(src).pipe(Unzip.Extract({path: target}));
+    fn && fn(null)
 }
 
 /**
