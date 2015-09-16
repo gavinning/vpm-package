@@ -1,0 +1,28 @@
+{
+  "name": "vpm-package",
+  "description": "vpm打包模块，解压与压缩",
+  "main": "package.js",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "vpm -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gavinning/vpm-package.git"
+  },
+  "keywords": [
+    "vpm",
+    "vpm-package"
+  ],
+  "author": "gavinning",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gavinning/vpm-package/issues"
+  },
+  "homepage": "https://github.com/gavinning/vpm-package",
+  "dependencies": {
+    "linco.lab": "0.0.13",
+    "moxie-zip": "0.0.4",
+    "unzip": "^0.1.11"
+  }
+}
