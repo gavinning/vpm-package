@@ -28,7 +28,7 @@ function zip(source, target, filter, fn) {
     })
 
     zip.saveAs(target, function(err){
-        fn(err)
+        fn(err, target)
     })
 }
 
