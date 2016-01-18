@@ -2,7 +2,7 @@
   "name": "vpm-package",
   "description": "vpm打包模块，解压与压缩",
   "main": "package.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "test": "vpm -v"
   },

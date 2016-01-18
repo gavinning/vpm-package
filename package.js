@@ -24,7 +24,7 @@ function zip(source, target, filter, fn) {
     fn = fn || function(){};
 
     files.forEach(function(item){
-        zip.addFile(item, item);
+        zip.addFile(path.relative(source, item), item);
     })
 
     zip.saveAs(target, function(err){
