@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var lib = require('linco.lab').lib;
+var glob = require('glob');
 var Unzip = require('unzip');
 var Zip = require('moxie-zip').ZipWriter;
 
@@ -8,27 +8,37 @@ var Zip = require('moxie-zip').ZipWriter;
  * 打包Zip
  * @param    {String}    source  压缩的源地址
  * @param    {String}    target  压缩包地址
- * @param    {Object}    filter  过滤条件，参考linco.lab.lib.dir的文档
+ * @param    {Object}    filter  过滤条件，参考glob的ignore文档
  * @param    {Function}  fn      回调
  * @example  zip('./folder', 'folder.zip', fn)
+ * @date     2016-04-22 11:48
  */
-function zip(source, target, filter, fn) {
+function zip(source, target, options, fn) {
     var zip = new Zip;
-    var files = lib.dir(source || process.cwd(), filter).files;
-    var zipfiles = [];
 
+    // 检查是否存在filter
     if(typeof filter == 'function'){
         fn = filter;
         filter = null;
     }
+    // 检查是否存在回调
     fn = fn || function(){};
 
-    files.forEach(function(item){
-        zip.addFile(path.relative(source, item), item);
-    })
+    // 查找文件准备执行压缩
+    glob(source + '/**', options, function(err, files){
+        if(err) throw err;
 
-    zip.saveAs(target, function(err){
-        fn(err, target)
+        // 添加文件到待压缩数据中
+        files.forEach(function(item){
+            if(fs.statSync(item).isFile()){
+                zip.addFile(path.relative(source, item), item);
+            }
+        })
+
+        // 执行压缩
+        zip.saveAs(target, function(err){
+            fn(err, target)
+        })
     })
 }
 
@@ -36,41 +46,16 @@ function zip(source, target, filter, fn) {
  * 解压Zip
  * @param    {String}   src     压缩包地址
  * @param    {String}   target  解压缩目的地
- * @example  zip('./folder.zip', './test/folder');
+ * @param    {Function} fn      回调，可选
+ * @example  zip('./folder.zip', './test/folder' [, fn]);
+ * @date     2016-04-22 11:58
  */
 function unzip(src, target, fn) {
-    fs.createReadStream(src).pipe(Unzip.Extract({path: target}));
-    fn && fn(null)
+    fs
+        .createReadStream(src)
+        .pipe(Unzip.Extract({path: target}))
+        .on('close', fn || function(){})
 }
-
-/**
- * [unzipSync description]
- * @param    {[type]}    src     [description]
- * @param    {[type]}    target  [description]
- * @param    {Function}  fn      [description]
- * @return   {[type]}            [description]
- * @example  [example]
- */
-function unzipSync(src, target, fn) {
-    var fstream = require('fstream')
-    var input = fs.createReadStream(src);
-    var ouput = fstream.Writer(target);
-
-    fn = fn || function(){}
-
-    input
-      .pipe(Unzip.Parse())
-      .pipe(ouput)
-
-    ouput.on('close', function(){
-        fn(null)
-    })
-
-    ouput.on('error', function(e){
-        fn(e)
-    })
-}
-
 
 exports.zip = zip;
 exports.unzip = unzip;
